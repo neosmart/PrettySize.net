@@ -5,4 +5,12 @@
         Base2,
         Base10
     }
+
+    public enum PrintFormat
+    {
+        Abbreviated,
+        AbbreviatedLowerCase,
+        Full,
+        FullLowerCase
+    }
 }

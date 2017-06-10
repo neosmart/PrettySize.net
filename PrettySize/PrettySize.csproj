@@ -1,9 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFrameworks>net20;net40;netstandard1.3</TargetFrameworks>
     <AssemblyName>NeoSmart.PrettySize</AssemblyName>
     <RootNamespace>NeoSmart.PrettySize</RootNamespace>
+    <Authors>NeoSmart Technologies, Mahmoud Al-Qudsi</Authors>
+    <Company>NeoSmart Technologies</Company>
+    <Description>Format or print file sizes in a human-readable format, with support for both base 10 (e.g. kilobyte, megabyte, KB, MB) and base 2 (e.g. kibibyte, mebibyte, KiB, MiB) formats.</Description>
+    <Copyright>Copyright NeoSmart Technologies 2017</Copyright>
+    <PackageLicenseUrl>https://cdn.rawgit.com/neosmart/PrettySize.net/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/neosmart/PrettySize.net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/neosmart/PrettySize.net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>file size, size, formatting, english</PackageTags>
+    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
