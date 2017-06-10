@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PrettySize
+namespace NeoSmart.PrettySize
 {
     public struct PrettySize : IFormattable
     {
