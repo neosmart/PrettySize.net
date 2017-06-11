@@ -13,9 +13,11 @@
     <RepositoryUrl>https://github.com/neosmart/PrettySize.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>file size, size, formatting, english</PackageTags>
-    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageReleaseNotes>Bugfixes plus support for petabyte/pebibyte and exabyte/exbibyte.</PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>2.0</Version>
+    <Version>2.1</Version>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
   </PropertyGroup>
 
 </Project>
