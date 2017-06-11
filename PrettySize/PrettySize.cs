@@ -38,21 +38,27 @@ namespace NeoSmart.PrettySize
             }
         }
 
+        static private string PrintBytes(ulong size, PrintFormat format)
+        {
+            switch (format)
+            {
+                case PrintFormat.Abbreviated: return $"{size} B";
+                case PrintFormat.AbbreviatedLowerCase: return $"{size} b";
+                case PrintFormat.Full: return size == 1 ? $"{size} Byte" : $"{size} Bytes";
+                case PrintFormat.Smart:
+                case PrintFormat.FullLowerCase:
+                    return size == 1 ? $"{size} byte" : $"{size} bytes";
+            }
+
+            throw new ArgumentException();
+        }
+
         static private readonly FormattingRule[] Base10Map = new FormattingRule[]
         {
             new FormattingRule { LessThan = 0, FormatDelegate = null }, //this should never be reached
             new FormattingRule { LessThan = 1 * Kilobyte, FormatDelegate = (size, @base, format) =>
             {
-                switch (format)
-                {
-                    case PrintFormat.Abbreviated: return $"{size} B";
-                    case PrintFormat.AbbreviatedLowerCase: return $"{size} b";
-                    case PrintFormat.Full: return size == 1 ? $"{size} Byte" : $"{size} Bytes";
-                    case PrintFormat.Smart:
-                    case PrintFormat.FullLowerCase:
-                        return size == 1 ? $"{size} byte" : $"{size} bytes";
-                    default: throw new ArgumentOutOfRangeException();
-                }
+                return PrintBytes(size, format);
             } },
             new FormattingRule { LessThan = 10 * Kilobyte, FormatDelegate = (size, @base, format) =>
             {
@@ -121,16 +127,7 @@ namespace NeoSmart.PrettySize
             new FormattingRule { LessThan = 0, FormatDelegate = null }, //this should never be reached
             new FormattingRule { LessThan = 1 * Kilobyte, FormatDelegate = (size, @base, format) =>
             {
-                switch (format)
-                {
-                    case PrintFormat.Abbreviated: return $"{size} B";
-                    case PrintFormat.AbbreviatedLowerCase: return $"{size} b";
-                    case PrintFormat.Full: return size == 1 ? $"{size} Byte" : $"{size} Bytes";
-                    case PrintFormat.Smart:
-                    case PrintFormat.FullLowerCase:
-                        return size == 1 ? $"{size} byte" : $"{size} bytes";
-                    default: throw new ArgumentOutOfRangeException();
-                }
+                return PrintBytes(size, format);
             } },
             new FormattingRule { LessThan = 10 * Kilobyte, FormatDelegate = (size, @base, format) =>
             {
@@ -269,7 +266,7 @@ namespace NeoSmart.PrettySize
                 return Char.ToLower(unit[0]) + "ib";
             }
 
-            throw new NotImplementedException();
+            throw new ArgumentException();
         }
 
         private static string FormatUnitBase10(decimal formattedSize, string unit, PrintFormat format)
@@ -296,7 +293,7 @@ namespace NeoSmart.PrettySize
                 return Char.ToLower(unit[0]) + "b";
             }
 
-            throw new NotImplementedException();
+            throw new ArgumentException();
         }
     }
 }
