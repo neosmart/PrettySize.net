@@ -4,6 +4,196 @@ namespace NeoSmart.PrettySize
 {
     public struct PrettySize : IFormattable
     {
+        public const long Kilobyte = 1000;
+        public const long Kebibyte = 1 << 10;
+        public const long Megabyte = 1000 * Kilobyte;
+        public const long Mebibyte = 1 << 20;
+        public const long Gigabyte = 1000 * Megabyte;
+        public const long Gibibyte = 1 << 30;
+        public const long Terabyte = 1000 * Gigabyte;
+        public const long Tebibyte = 1 << 40;
+
+        public const long KB = Kilobyte;
+        public const long KiB = Kebibyte;
+        public const long MB = Megabyte;
+        public const long MiB = Mebibyte;
+        public const long GB = Gigabyte;
+        public const long GiB = Gibibyte;
+        public const long TB = Terabyte;
+        public const long TiB = Tebibyte;
+
+        delegate string FormatDelegate(ulong size, CalculationBase @base, PrintFormat format);
+
+        struct FormattingRule : IComparable
+        {
+            public ulong LessThan;
+            public FormatDelegate FormatDelegate;
+
+            public int CompareTo(object other)
+            {
+                //we are assuming other is always IComparable to avoid overhead of "is ulong" check
+                //Array.BinarySearch always used the object's ICompare even if an IComparer was specified until .NET 4.5
+                //https://stackoverflow.com/a/19319601/17027
+                return LessThan.CompareTo((ulong)other);
+            }
+        }
+
+        static private readonly FormattingRule[] Base10Map = new FormattingRule[]
+        {
+            new FormattingRule { LessThan = 0, FormatDelegate = null }, //this should never be reached
+            new FormattingRule { LessThan = 1 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            {
+                switch (format)
+                {
+                    case PrintFormat.Abbreviated: return $"{size} B";
+                    case PrintFormat.AbbreviatedLowerCase: return $"{size} b";
+                    case PrintFormat.Full: return size == 1 ? $"{size} Byte" : $"{size} Bytes";
+                    case PrintFormat.Smart:
+                    case PrintFormat.FullLowerCase:
+                        return size == 1 ? $"{size} byte" : $"{size} bytes";
+                    default: throw new ArgumentOutOfRangeException();
+                }
+            } },
+            new FormattingRule { LessThan = 10 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Kilobyte));
+                return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Kilobyte", format)}";
+            } },
+            new FormattingRule { LessThan = 100 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Kilobyte));
+                return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Kilobyte", format)}";
+            } },
+            new FormattingRule { LessThan = 1 * Megabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Kilobyte));
+                return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Kilobyte", format)}";
+            } },
+            new FormattingRule { LessThan = 10 * Megabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Megabyte));
+                return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Megabyte", format)}";
+            } },
+            new FormattingRule { LessThan = 100 * Megabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Megabyte));
+                return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Megabyte", format)}";
+            } },
+            new FormattingRule { LessThan = 1 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Megabyte));
+                return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Megabyte", format)}";
+            } },
+            new FormattingRule { LessThan = 10 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Gigabyte));
+                return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Gigabyte", format)}";
+            } },
+            new FormattingRule { LessThan = 100 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Gigabyte));
+                return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Gigabyte", format)}";
+            } },
+            new FormattingRule { LessThan = 1 * Terabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Gigabyte));
+                return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Gigabyte", format)}";
+            } },
+            new FormattingRule { LessThan = 10 * Terabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Terabyte));
+                return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Terabyte", format)}";
+            } },
+            new FormattingRule { LessThan = 100 * Terabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Terabyte));
+                return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Terabyte", format)}";
+            } },
+            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Terabyte));
+                return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Terabyte", format)}";
+            } },
+        };
+
+        static private readonly FormattingRule[] Base2Map = new FormattingRule[]
+        {
+            new FormattingRule { LessThan = 0, FormatDelegate = null }, //this should never be reached
+            new FormattingRule { LessThan = 1 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            {
+                switch (format)
+                {
+                    case PrintFormat.Abbreviated: return $"{size} B";
+                    case PrintFormat.AbbreviatedLowerCase: return $"{size} b";
+                    case PrintFormat.Full: return size == 1 ? $"{size} Byte" : $"{size} Bytes";
+                    case PrintFormat.Smart:
+                    case PrintFormat.FullLowerCase:
+                        return size == 1 ? $"{size} byte" : $"{size} bytes";
+                    default: throw new ArgumentOutOfRangeException();
+                }
+            } },
+            new FormattingRule { LessThan = 10 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Kebibyte));
+                return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 100 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Kebibyte));
+                return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 1 * Megabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Kebibyte));
+                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 10 * Megabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Mebibyte));
+                return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Mebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 100 * Megabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Mebibyte));
+                return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Mebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 1 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Mebibyte));
+                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Mebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 10 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Gibibyte));
+                return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Gibibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 100 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Gibibyte));
+                return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Gibibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 1 * Terabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Gibibyte));
+                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Gibibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 10 * Terabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Tebibyte));
+                return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 100 * Terabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Tebibyte));
+                return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Tebibyte));
+                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
+            } },
+        };
+
         public readonly long Bytes;
 
         public PrettySize(long bytes)
@@ -18,7 +208,7 @@ namespace NeoSmart.PrettySize
 
         public override string ToString()
         {
-            return FriendlySize((ulong)Bytes, PrintFormat.Abbreviated);
+            return Format(Bytes, CalculationBase.Base2, PrintFormat.Smart);
         }
 
         public string ToString(string format, IFormatProvider formatProvider)
@@ -26,27 +216,32 @@ namespace NeoSmart.PrettySize
             throw new NotImplementedException();
         }
 
-        public static string Format(long size, CalculationBase @base = CalculationBase.Base2, PrintFormat format = PrintFormat.Abbreviated)
+        public static string Format(long size, CalculationBase @base = CalculationBase.Base2, PrintFormat format = PrintFormat.Smart)
         {
-            if (@base == CalculationBase.Base2)
-            {
-                return FriendlySize((ulong)size, format);
-            }
-            else
-            {
-                return FriendlySizeBase10((ulong)size, format);
-            }
+            return Format((ulong)size, @base, format);
         }
 
-        public static string Format(ulong size, CalculationBase @base = CalculationBase.Base2, PrintFormat format = PrintFormat.Abbreviated)
+        public static string Format(ulong size, CalculationBase @base = CalculationBase.Base2, PrintFormat format = PrintFormat.Smart)
         {
             if (@base == CalculationBase.Base2)
             {
-                return FriendlySize(size, format);
+                var searchIndex = Array.BinarySearch(Base2Map, size);
+                if (searchIndex < 0)
+                {
+                    searchIndex = ~searchIndex;
+                    return Base2Map[searchIndex].FormatDelegate(size, @base, format);
+                }
+                return Base2Map[searchIndex + 1].FormatDelegate(size, @base, format);
             }
             else
             {
-                return FriendlySizeBase10(size, format);
+                var searchIndex = Array.BinarySearch(Base10Map, size);
+                if (searchIndex < 0)
+                {
+                    searchIndex = ~searchIndex;
+                    return Base10Map[searchIndex].FormatDelegate(size, @base, format);
+                }
+                return Base10Map[searchIndex+1].FormatDelegate(size, @base, format);
             }
         }
 
@@ -57,17 +252,17 @@ namespace NeoSmart.PrettySize
                 unit += "s";
             }
 
-            if (format == PrintFormat.Full)
+            if (format == PrintFormat.Smart || format == PrintFormat.Abbreviated)
+            {
+                return unit[0] + "iB";
+            }
+            else if (format == PrintFormat.Full)
             {
                 return unit;
             }
             else if (format == PrintFormat.FullLowerCase)
             {
                 return unit.ToLower();
-            }
-            else if (format == PrintFormat.Abbreviated)
-            {
-                return unit[0] + "iB";
             }
             else if (format == PrintFormat.AbbreviatedLowerCase)
             {
@@ -84,7 +279,11 @@ namespace NeoSmart.PrettySize
                 unit += "s";
             }
 
-            if (format == PrintFormat.Full)
+            if (format == PrintFormat.Smart || format == PrintFormat.Abbreviated)
+            {
+                return unit[0] + "B";
+            }
+            else if (format == PrintFormat.Full)
             {
                 return unit;
             }
@@ -92,152 +291,12 @@ namespace NeoSmart.PrettySize
             {
                 return unit.ToLower();
             }
-            else if (format == PrintFormat.Abbreviated)
-            {
-                return unit[0] + "B";
-            }
             else if (format == PrintFormat.AbbreviatedLowerCase)
             {
                 return Char.ToLower(unit[0]) + "b";
             }
 
             throw new NotImplementedException();
-        }
-
-        public static string FriendlySize(ulong size, PrintFormat format)
-        {
-            if (size < 1 * (1L << 10))
-            {
-                return size + " Bytes";
-            }
-            else if (size < 10 * (1L << 10))
-            {
-                var formattedSize = (size / (1.0M * (1L << 10)));
-                return formattedSize.ToString("N2") + " " + FormatUnitBase2(formattedSize, "Kibibyte", format);
-            }
-            else if (size < 1.0M * (1L << 10))
-            {
-                var formattedSize = (size / (1.0M * (1L << 10)));
-				return formattedSize.ToString("N1") + " " + FormatUnitBase2(formattedSize, "Kibibyte", format);
-            }
-            else if (size < 1 * (1L << 20))
-            {
-                var formattedSize = (size / (1.0M * (1L << 10)));
-				return formattedSize.ToString("N0") + " " + FormatUnitBase2(formattedSize, "Kibibyte", format);
-            }
-            else if (size < 10 * (1L << 20))
-            {
-                var formattedSize = (size / (1.0M * (1L << 20)));
-				return formattedSize.ToString("N2") + " " + FormatUnitBase2(formattedSize, "Mebibyte", format);
-            }
-            else if (size < 1.0M * (1L << 20))
-            {
-                var formattedSize = (size / (1.0M * (1L << 20)));
-				return formattedSize.ToString("N1") + " " + FormatUnitBase2(formattedSize, "Mebibyte", format);
-            }
-            else if (size < 1 * (1L << 30))
-            {
-                var formattedSize = (size / (1.0M * (1L << 20)));
-				return formattedSize.ToString("N0") + " " + FormatUnitBase2(formattedSize, "Mebibyte", format);
-            }
-            else if (size < 10 * (1L << 30))
-            {
-                var formattedSize = (size / (1.0M * (1L << 30)));
-                return formattedSize.ToString("N2") + " " + FormatUnitBase2(formattedSize, "Gibibyte", format);
-            }
-            else if (size < 1.0M * (1L << 30))
-            {
-                var formattedSize = (size / (1.0M * (1L << 30)));
-				return formattedSize.ToString("N1") + " " + FormatUnitBase2(formattedSize, "Gibibyte", format);
-            }
-            else if (size < 1 * (1L << 40))
-            {
-                var formattedSize = (size / (1.0M * (1L << 30)));
-				return formattedSize.ToString("N0") + " " + FormatUnitBase2(formattedSize, "Gibibyte", format);
-            }
-            else if (size < 10 * (1L << 40))
-            {
-                var formattedSize = (size / (1.0M * (1L << 40)));
-				return formattedSize.ToString("N2") + " " + FormatUnitBase2(formattedSize, "Tebibyte", format);
-            }
-            else if (size < 1.0M * (1L << 40))
-            {
-                var formattedSize = (size / (1.0M * (1L << 40)));
-				return formattedSize.ToString("N1") + " " + FormatUnitBase2(formattedSize, "Tebibyte", format);
-            }
-            else
-            {
-                var formattedSize = (size / (1.0M * (1L << 40)));
-				return formattedSize.ToString("N0") + " " + FormatUnitBase2(formattedSize, "Tebibyte", format);
-            }
-        }
-
-        public static string FriendlySizeBase10(ulong size, PrintFormat format)
-        {
-            if (size < 1 * Math.Pow(10, 10))
-            {
-                return size + " Bytes";
-            }
-            else if (size < 10 * Math.Pow(10, 10))
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 10)));
-				return formattedSize.ToString("N2") + " " + FormatUnitBase10(formattedSize, "Kilobytes", format);
-            }
-            else if (size < 1.0M * (decimal)Math.Pow(10, 10))
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 10)));
-				return formattedSize.ToString("N1") + " " + FormatUnitBase10(formattedSize, "Kilobytes", format);
-            }
-            else if (size < 1 * Math.Pow(10, 20))
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 10)));
-				return formattedSize.ToString("N0") + " " + FormatUnitBase10(formattedSize, "Kilobytes", format);
-            }
-            else if (size < 10 * Math.Pow(10, 20))
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 20)));
-				return formattedSize.ToString("N2") + " " + FormatUnitBase10(formattedSize, "Megabytes", format);
-            }
-            else if (size < 1.0M * (decimal)Math.Pow(10, 20))
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 20)));
-				return formattedSize.ToString("N1") + " " + FormatUnitBase10(formattedSize, "Megabytes", format);
-            }
-            else if (size < 1 * Math.Pow(10, 30))
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 20)));
-				return formattedSize.ToString("N0") + " " + FormatUnitBase10(formattedSize, "Megabytes", format);
-            }
-            else if (size < 10 * Math.Pow(10, 30))
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 30)));
-				return formattedSize.ToString("N2") + " " + FormatUnitBase10(formattedSize, "Gigabytes", format);
-            }
-            else if (size < 1.0M * (decimal)Math.Pow(10, 30))
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 30)));
-				return formattedSize.ToString("N1") + " " + FormatUnitBase10(formattedSize, "Gigabytes", format);
-            }
-            else if (size < 1 * Math.Pow(10, 40))
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 30)));
-				return formattedSize.ToString("N0") + " " + FormatUnitBase10(formattedSize, "Gigabytes", format);
-            }
-            else if (size < 10 * Math.Pow(10, 40))
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 40)));
-				return formattedSize.ToString("N2") + " " + FormatUnitBase10(formattedSize, "Terabytes", format);
-            }
-            else if (size < 1.0M * (decimal)Math.Pow(10, 40))
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 40)));
-				return formattedSize.ToString("N1") + " " + FormatUnitBase10(formattedSize, "Terabytes", format);
-            }
-            else
-            {
-                var formattedSize = (size / (1.0M * (decimal)Math.Pow(10, 40)));
-				return formattedSize.ToString("N0") + " " + FormatUnitBase10(formattedSize, "Terabytes", format);
-            }
         }
     }
 }

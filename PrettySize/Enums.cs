@@ -8,6 +8,7 @@
 
     public enum PrintFormat
     {
+        Smart,
         Abbreviated,
         AbbreviatedLowerCase,
         Full,
