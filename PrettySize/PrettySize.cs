@@ -11,12 +11,12 @@ namespace NeoSmart.PrettySize
         public const long Petabyte = 1000 * Terabyte;
         public const long Exabyte  = 1000 * Petabyte;
 
-        public const long Kebibyte = 1 << 10;
-        public const long Mebibyte = 1 << 20;
-        public const long Gibibyte = 1 << 30;
-        public const long Tebibyte = 1 << 40;
-        public const long Pebibyte = 1 << 50;
-        public const long Exbibyte = 1 << 60;
+        public const long Kebibyte = 1L << 10;
+        public const long Mebibyte = 1L << 20;
+        public const long Gibibyte = 1L << 30;
+        public const long Tebibyte = 1L << 40;
+        public const long Pebibyte = 1L << 50;
+        public const long Exbibyte = 1L << 60;
 
         public const long KB = Kilobyte;
         public const long KiB = Kebibyte;
