@@ -9,12 +9,14 @@ namespace NeoSmart.PrettySize
         public const long Gigabyte = 1000 * Megabyte;
         public const long Terabyte = 1000 * Gigabyte;
         public const long Petabyte = 1000 * Terabyte;
+        public const long Exabyte  = 1000 * Petabyte;
 
         public const long Kebibyte = 1 << 10;
         public const long Mebibyte = 1 << 20;
         public const long Gibibyte = 1 << 30;
         public const long Tebibyte = 1 << 40;
         public const long Pebibyte = 1 << 50;
+        public const long Exbibyte = 1 << 60;
 
         public const long KB = Kilobyte;
         public const long KiB = Kebibyte;
@@ -133,10 +135,20 @@ namespace NeoSmart.PrettySize
                 var formattedSize = (size / (1M * Petabyte));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Petabyte", format)}";
             } },
-            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            new FormattingRule { LessThan = 1 * Exabyte, FormatDelegate = (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Petabyte));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Petabyte", format)}";
+            } },
+            new FormattingRule { LessThan = 10L * (ulong)Exabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Exabyte));
+                return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Exabyte", format)}";
+            } },
+            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Exabyte));
+                return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Exabyte", format)}";
             } },
         };
 
@@ -217,10 +229,20 @@ namespace NeoSmart.PrettySize
                 var formattedSize = (size / (1M * Pebibyte));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Pebibyte", format)}";
             } },
-            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            new FormattingRule { LessThan = 1 * Exabyte, FormatDelegate = (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Pebibyte));
-                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Pebibyte", format)}";
+                return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Pebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 10 * (ulong)Exabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Exbibyte));
+                return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Exbibyte", format)}";
+            } },
+            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Exbibyte));
+                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Exbibyte", format)}";
             } },
         };
 
