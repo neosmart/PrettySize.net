@@ -4,14 +4,17 @@ namespace NeoSmart.PrettySize
 {
     public struct PrettySize : IFormattable
     {
-        public const long Kilobyte = 1000;
-        public const long Kebibyte = 1 << 10;
-        public const long Megabyte = 1000 * Kilobyte;
-        public const long Mebibyte = 1 << 20;
+        public const long Kilobyte = 1000;        
+        public const long Megabyte = 1000 * Kilobyte;        
         public const long Gigabyte = 1000 * Megabyte;
-        public const long Gibibyte = 1 << 30;
         public const long Terabyte = 1000 * Gigabyte;
+        public const long Petabyte = 1000 * Terabyte;
+
+        public const long Kebibyte = 1 << 10;
+        public const long Mebibyte = 1 << 20;
+        public const long Gibibyte = 1 << 30;
         public const long Tebibyte = 1 << 40;
+        public const long Pebibyte = 1 << 50;
 
         public const long KB = Kilobyte;
         public const long KiB = Kebibyte;
@@ -115,10 +118,25 @@ namespace NeoSmart.PrettySize
                 var formattedSize = (size / (1M * Terabyte));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Terabyte", format)}";
             } },
-            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            new FormattingRule { LessThan = 1 * Petabyte, FormatDelegate = (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Terabyte));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Terabyte", format)}";
+            } },
+            new FormattingRule { LessThan = 10 * Petabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Petabyte));
+                return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Petabyte", format)}";
+            } },
+            new FormattingRule { LessThan = 100 * Petabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Petabyte));
+                return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Petabyte", format)}";
+            } },
+            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Petabyte));
+                return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Petabyte", format)}";
             } },
         };
 
@@ -184,10 +202,25 @@ namespace NeoSmart.PrettySize
                 var formattedSize = (size / (1M * Tebibyte));
                 return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
             } },
-            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            new FormattingRule { LessThan = 1 * Petabyte, FormatDelegate = (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Tebibyte));
-                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
+                return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Tebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 10 * Petabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Pebibyte));
+                return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Pebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = 100 * Petabyte, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Pebibyte));
+                return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Pebibyte", format)}";
+            } },
+            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            {
+                var formattedSize = (size / (1M * Pebibyte));
+                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Pebibyte", format)}";
             } },
         };
 
