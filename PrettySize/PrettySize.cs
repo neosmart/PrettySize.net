@@ -217,27 +217,27 @@ namespace NeoSmart.PrettySize
             new FormattingRule { LessThan = 1 * Petabyte, FormatDelegate = (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Tebibyte));
-                return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Tebibyte", format)}";
+                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
             } },
             new FormattingRule { LessThan = 10 * Petabyte, FormatDelegate = (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Pebibyte));
-                return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Pebibyte", format)}";
+                return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Pebibyte", format)}";
             } },
             new FormattingRule { LessThan = 100 * Petabyte, FormatDelegate = (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Pebibyte));
-                return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Pebibyte", format)}";
+                return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Pebibyte", format)}";
             } },
             new FormattingRule { LessThan = 1 * Exabyte, FormatDelegate = (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Pebibyte));
-                return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Pebibyte", format)}";
+                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Pebibyte", format)}";
             } },
             new FormattingRule { LessThan = 10 * (ulong)Exabyte, FormatDelegate = (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Exbibyte));
-                return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Exbibyte", format)}";
+                return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Exbibyte", format)}";
             } },
             new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
             {
