@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net20;net40;netstandard1.3</TargetFrameworks>
+    <TargetFrameworks>net20;net40;netstandard1.3;netstandard2.1</TargetFrameworks>
     <AssemblyName>NeoSmart.PrettySize</AssemblyName>
     <RootNamespace>NeoSmart.PrettySize</RootNamespace>
     <Authors>NeoSmart Technologies, Mahmoud Al-Qudsi</Authors>

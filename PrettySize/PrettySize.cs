@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NeoSmart.PrettySize
 {
-    public readonly struct PrettySize : IFormattable
+    public readonly struct PrettySize : IFormattable, IComparable<PrettySize>, IEquatable<PrettySize>
     {
         public const long BYTE = 1;
         public const long KILOBYTE = 1000 * BYTE;
@@ -421,6 +421,58 @@ namespace NeoSmart.PrettySize
             return new PrettySize((long) (((double)lhs.TotalBytes) / rhs));
         }
 
+        public int CompareTo(PrettySize other)
+        {
+            return TotalBytes.CompareTo(other.TotalBytes);
+        }
 
+        public bool Equals(PrettySize other)
+        {
+            return TotalBytes.Equals(other.TotalBytes);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is PrettySize other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+#if NETSTANDARD2_1_OR_GREATER
+            return HashCode.Combine(TotalBytes);
+#else
+            return TotalBytes.GetHashCode();
+#endif
+        }
+
+        public static bool operator ==(PrettySize lhs, PrettySize rhs)
+        {
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(PrettySize lhs, PrettySize rhs)
+        {
+            return !lhs.Equals(rhs);
+        }
+
+        public static bool operator <(PrettySize lhs, PrettySize rhs)
+        {
+            return lhs.CompareTo(rhs) < 0;
+        }
+
+        public static bool operator >(PrettySize lhs, PrettySize rhs)
+        {
+            return lhs.CompareTo(rhs) > 0;
+        }
+
+        public static bool operator <=(PrettySize lhs, PrettySize rhs)
+        {
+            return lhs.CompareTo(rhs) <= 0;
+        }
+
+        public static bool operator >=(PrettySize lhs, PrettySize rhs)
+        {
+            return lhs.CompareTo(rhs) >= 0;
+        }
     }
 }
