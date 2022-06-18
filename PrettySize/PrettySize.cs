@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace NeoSmart.PrettySize
 {
-    public struct PrettySize : IFormattable
+    public readonly struct PrettySize : IFormattable
     {
         public const long Byte = 1;
         public const long Kilobyte = 1000 * Byte;
@@ -31,18 +32,26 @@ namespace NeoSmart.PrettySize
 
         delegate string FormatDelegate(ulong size, CalculationBase @base, PrintFormat format);
 
-        struct FormattingRule : IComparable
+        readonly struct FormattingRule : IComparable
         {
-            public ulong LessThan;
-            public FormatDelegate FormatDelegate;
+            public ulong LessThan { get; }
+            public FormatDelegate FormatDelegate { get; }
 
             public int CompareTo(object other)
             {
-                //we are assuming other is always IComparable to avoid overhead of "is ulong" check
-                //Array.BinarySearch always used the object's ICompare even if an IComparer was specified until .NET 4.5
-                //https://stackoverflow.com/a/19319601/17027
-                return LessThan.CompareTo((ulong)other);
+                // We are assuming other is always IComparable to avoid overhead of "is ulong" check
+                // Array.BinarySearch always used the object's ICompare even if an IComparer was specified until .NET 4.5
+                // https://stackoverflow.com/a/19319601/17027
+                return LessThan.CompareTo(((FormattingRule)other).LessThan);
             }
+
+            // .NET 2.0 doesn't have init-only setters so we need this constructor!
+            public FormattingRule(ulong LessThan, FormatDelegate FormatDelegate)
+            {
+                this.LessThan = LessThan;
+                this.FormatDelegate = FormatDelegate;
+            }
+        }
         }
 
         static private string PrintBytes(ulong size, PrintFormat format)
@@ -62,193 +71,193 @@ namespace NeoSmart.PrettySize
 
         static private readonly FormattingRule[] Base10Map = new FormattingRule[]
         {
-            new FormattingRule { LessThan = 0, FormatDelegate = null }, //this should never be reached
-            new FormattingRule { LessThan = 1 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            new FormattingRule(0, null), // this should never be reached
+            new FormattingRule(1 * Kilobyte, (size, @base, format) =>
             {
                 return PrintBytes(size, format);
-            } },
-            new FormattingRule { LessThan = 10 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10 * Kilobyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Kilobyte));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Kilobyte", format)}";
-            } },
-            new FormattingRule { LessThan = 100 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(100 * Kilobyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Kilobyte));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Kilobyte", format)}";
-            } },
-            new FormattingRule { LessThan = 1 * Megabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(1 * Megabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Kilobyte));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Kilobyte", format)}";
-            } },
-            new FormattingRule { LessThan = 10 * Megabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10 * Megabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Megabyte));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Megabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 100 * Megabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(100 * Megabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Megabyte));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Megabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 1 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(1 * Gigabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Megabyte));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Megabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 10 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10 * Gigabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Gigabyte));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Gigabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 100 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(100 * Gigabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Gigabyte));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Gigabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 1 * Terabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(1 * Terabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Gigabyte));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Gigabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 10 * Terabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10 * Terabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Terabyte));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Terabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 100 * Terabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(100 * Terabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Terabyte));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Terabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 1 * Petabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(1 * Petabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Terabyte));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Terabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 10 * Petabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10 * Petabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Petabyte));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Petabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 100 * Petabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(100 * Petabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Petabyte));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Petabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 1 * Exabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(1 * Exabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Petabyte));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Petabyte", format)}";
-            } },
-            new FormattingRule { LessThan = 10L * (ulong)Exabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10L * (ulong)Exabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Exabyte));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Exabyte", format)}";
-            } },
-            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(ulong.MaxValue, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Exabyte));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Exabyte", format)}";
-            } },
+            }),
         };
 
         static private readonly FormattingRule[] Base2Map = new FormattingRule[]
         {
-            new FormattingRule { LessThan = 0, FormatDelegate = null }, //this should never be reached
-            new FormattingRule { LessThan = 1 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            new FormattingRule (0, null), // this should never be reached
+            new FormattingRule(1 * Kilobyte, (size, @base, format) =>
             {
                 return PrintBytes(size, format);
-            } },
-            new FormattingRule { LessThan = 10 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10 * Kilobyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Kebibyte));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 100 * Kilobyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(100 * Kilobyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Kebibyte));
                 return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 1 * Megabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(1 * Megabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Kebibyte));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 10 * Megabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10 * Megabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Mebibyte));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Mebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 100 * Megabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(100 * Megabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Mebibyte));
                 return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Mebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 1 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(1 * Gigabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Mebibyte));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Mebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 10 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10 * Gigabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Gibibyte));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Gibibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 100 * Gigabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(100 * Gigabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Gibibyte));
                 return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Gibibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 1 * Terabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(1 * Terabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Gibibyte));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Gibibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 10 * Terabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10 * Terabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Tebibyte));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 100 * Terabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(100 * Terabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Tebibyte));
                 return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 1 * Petabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(1 * Petabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Tebibyte));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 10 * Petabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10 * Petabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Pebibyte));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Pebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 100 * Petabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(100 * Petabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Pebibyte));
                 return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Pebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 1 * Exabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(1 * Exabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Pebibyte));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Pebibyte", format)}";
-            } },
-            new FormattingRule { LessThan = 10 * (ulong)Exabyte, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(10 * (ulong)Exabyte, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Exbibyte));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Exbibyte", format)}";
-            } },
-            new FormattingRule { LessThan = ulong.MaxValue, FormatDelegate = (size, @base, format) =>
+            }),
+            new FormattingRule(ulong.MaxValue, (size, @base, format) =>
             {
                 var formattedSize = (size / (1M * Exbibyte));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Exbibyte", format)}";
-            } },
+            }),
         };
 
-        public readonly long Bytes;
+        public long Bytes { get; }
 
         public PrettySize(long bytes)
         {
