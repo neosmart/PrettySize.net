@@ -5,30 +5,51 @@ namespace NeoSmart.PrettySize
 {
     public readonly struct PrettySize : IFormattable
     {
-        public const long Byte = 1;
-        public const long Kilobyte = 1000 * Byte;
-        public const long Megabyte = 1000 * Kilobyte;
-        public const long Gigabyte = 1000 * Megabyte;
-        public const long Terabyte = 1000 * Gigabyte;
-        public const long Petabyte = 1000 * Terabyte;
-        public const long Exabyte  = 1000 * Petabyte;
+        public const long BYTE = 1;
+        public const long KILOBYTE = 1000 * BYTE;
+        public const long MEGABYTE = 1000 * KILOBYTE;
+        public const long GIGABYTE = 1000 * MEGABYTE;
+        public const long TERABYTE = 1000 * GIGABYTE;
+        public const long PETABYTE = 1000 * TERABYTE;
+        public const long EXABYTE  = 1000 * PETABYTE;
 
-        public const long Kibibyte = 1L << 10;
-        public const long Mebibyte = 1L << 20;
-        public const long Gibibyte = 1L << 30;
-        public const long Tebibyte = 1L << 40;
-        public const long Pebibyte = 1L << 50;
-        public const long Exbibyte = 1L << 60;
+        public const long KIBIBYTE = 1L << 10;
+        public const long MEBIBYTE = 1L << 20;
+        public const long GIBIBYTE = 1L << 30;
+        public const long TEBIBYTE = 1L << 40;
+        public const long PEBIBYTE = 1L << 50;
+        public const long EXBIBYTE = 1L << 60;
 
-        public const long B = Byte;
-        public const long KB = Kilobyte;
-        public const long KiB = Kibibyte;
-        public const long MB = Megabyte;
-        public const long MiB = Mebibyte;
-        public const long GB = Gigabyte;
-        public const long GiB = Gibibyte;
-        public const long TB = Terabyte;
-        public const long TiB = Tebibyte;
+        public static PrettySize B(long value) => new PrettySize(value);
+        public static PrettySize Bytes(long value) => new PrettySize(value);
+
+        public static PrettySize Kilobytes(long value) => new PrettySize(value * BYTE);
+        public static PrettySize Megabytes(long value) => new PrettySize(value * MEGABYTE);
+        public static PrettySize Gigabytes(long value) => new PrettySize(value * GIGABYTE);
+        public static PrettySize Terabytes(long value) => new PrettySize(value * TERABYTE);
+        public static PrettySize Petabytes(long value) => new PrettySize(value * PETABYTE);
+        public static PrettySize Exabytes(long value) => new PrettySize(value * EXABYTE);
+
+        public static PrettySize KB(long value) => Kilobytes(value);
+        public static PrettySize MB(long value) => Megabytes(value);
+        public static PrettySize GB(long value) => Gigabytes(value);
+        public static PrettySize TB(long value) => Terabytes(value);
+        public static PrettySize PB(long value) => Petabytes(value);
+        public static PrettySize EB(long value) => Exabytes(value);
+
+        public static PrettySize Kibibytes(long value) => new PrettySize(value * KIBIBYTE);
+        public static PrettySize Mebibytes(long value) => new PrettySize(value * MEBIBYTE);
+        public static PrettySize Gibibytes(long value) => new PrettySize(value * GIBIBYTE);
+        public static PrettySize Tebibytes(long value) => new PrettySize(value * TEBIBYTE);
+        public static PrettySize Pebibytes(long value) => new PrettySize(value * PEBIBYTE);
+        public static PrettySize Exbibytes(long value) => new PrettySize(value * EXBIBYTE);
+
+        public static PrettySize KiB(long value) => Kibibytes(value);
+        public static PrettySize MiB(long value) => Mebibytes(value);
+        public static PrettySize GiB(long value) => Gibibytes(value);
+        public static PrettySize TiB(long value) => Tebibytes(value);
+        public static PrettySize PiB(long value) => Pebibytes(value);
+        public static PrettySize EiB(long value) => Exbibytes(value);
 
         delegate string FormatDelegate(ulong size, CalculationBase @base, PrintFormat format);
 
@@ -84,93 +105,93 @@ namespace NeoSmart.PrettySize
         static private readonly FormattingRule[] Base10Map = new FormattingRule[]
         {
             new FormattingRule(0, null), // this should never be reached
-            new FormattingRule(1 * Kilobyte, (size, @base, format) =>
+            new FormattingRule(1 * KILOBYTE, (size, @base, format) =>
             {
                 return PrintBytes(size, format);
             }),
-            new FormattingRule(10 * Kilobyte, (size, @base, format) =>
+            new FormattingRule(10 * KILOBYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Kilobyte));
+                var formattedSize = (size / (1D * KILOBYTE));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Kilobyte", format)}";
             }),
-            new FormattingRule(100 * Kilobyte, (size, @base, format) =>
+            new FormattingRule(100 * KILOBYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Kilobyte));
+                var formattedSize = (size / (1D * KILOBYTE));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Kilobyte", format)}";
             }),
-            new FormattingRule(1 * Megabyte, (size, @base, format) =>
+            new FormattingRule(1 * MEGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Kilobyte));
+                var formattedSize = (size / (1D * KILOBYTE));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Kilobyte", format)}";
             }),
-            new FormattingRule(10 * Megabyte, (size, @base, format) =>
+            new FormattingRule(10 * MEGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Megabyte));
+                var formattedSize = (size / (1D * MEGABYTE));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Megabyte", format)}";
             }),
-            new FormattingRule(100 * Megabyte, (size, @base, format) =>
+            new FormattingRule(100 * MEGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Megabyte));
+                var formattedSize = (size / (1D * MEGABYTE));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Megabyte", format)}";
             }),
-            new FormattingRule(1 * Gigabyte, (size, @base, format) =>
+            new FormattingRule(1 * GIGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Megabyte));
+                var formattedSize = (size / (1D * MEGABYTE));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Megabyte", format)}";
             }),
-            new FormattingRule(10 * Gigabyte, (size, @base, format) =>
+            new FormattingRule(10 * GIGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Gigabyte));
+                var formattedSize = (size / (1D * GIGABYTE));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Gigabyte", format)}";
             }),
-            new FormattingRule(100 * Gigabyte, (size, @base, format) =>
+            new FormattingRule(100 * GIGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Gigabyte));
+                var formattedSize = (size / (1D * GIGABYTE));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Gigabyte", format)}";
             }),
-            new FormattingRule(1 * Terabyte, (size, @base, format) =>
+            new FormattingRule(1 * TERABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Gigabyte));
+                var formattedSize = (size / (1D * GIGABYTE));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Gigabyte", format)}";
             }),
-            new FormattingRule(10 * Terabyte, (size, @base, format) =>
+            new FormattingRule(10 * TERABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Terabyte));
+                var formattedSize = (size / (1D * TERABYTE));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Terabyte", format)}";
             }),
-            new FormattingRule(100 * Terabyte, (size, @base, format) =>
+            new FormattingRule(100 * TERABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Terabyte));
+                var formattedSize = (size / (1D * TERABYTE));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Terabyte", format)}";
             }),
-            new FormattingRule(1 * Petabyte, (size, @base, format) =>
+            new FormattingRule(1 * PETABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Terabyte));
+                var formattedSize = (size / (1D * TERABYTE));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Terabyte", format)}";
             }),
-            new FormattingRule(10 * Petabyte, (size, @base, format) =>
+            new FormattingRule(10 * PETABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Petabyte));
+                var formattedSize = (size / (1D * PETABYTE));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Petabyte", format)}";
             }),
-            new FormattingRule(100 * Petabyte, (size, @base, format) =>
+            new FormattingRule(100 * PETABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Petabyte));
+                var formattedSize = (size / (1D * PETABYTE));
                 return $"{formattedSize:N1} {FormatUnitBase10(formattedSize, "Petabyte", format)}";
             }),
-            new FormattingRule(1 * Exabyte, (size, @base, format) =>
+            new FormattingRule(1 * EXABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Petabyte));
+                var formattedSize = (size / (1D * PETABYTE));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Petabyte", format)}";
             }),
-            new FormattingRule(10L * (ulong)Exabyte, (size, @base, format) =>
+            new FormattingRule(10L * (ulong)EXABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Exabyte));
+                var formattedSize = (size / (1D * EXABYTE));
                 return $"{formattedSize:N2} {FormatUnitBase10(formattedSize, "Exabyte", format)}";
             }),
             new FormattingRule(ulong.MaxValue, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Exabyte));
+                var formattedSize = (size / (1D * EXABYTE));
                 return $"{formattedSize:N0} {FormatUnitBase10(formattedSize, "Exabyte", format)}";
             }),
         };
@@ -178,112 +199,112 @@ namespace NeoSmart.PrettySize
         static private readonly FormattingRule[] Base2Map = new FormattingRule[]
         {
             new FormattingRule (0, null), // this should never be reached
-            new FormattingRule(1 * Kilobyte, (size, @base, format) =>
+            new FormattingRule(1 * KILOBYTE, (size, @base, format) =>
             {
                 return PrintBytes(size, format);
             }),
-            new FormattingRule(10 * Kilobyte, (size, @base, format) =>
+            new FormattingRule(10 * KILOBYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Kebibyte));
+                var formattedSize = (size / (1D * KIBIBYTE));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
             }),
-            new FormattingRule(100 * Kilobyte, (size, @base, format) =>
+            new FormattingRule(100 * KILOBYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Kebibyte));
+                var formattedSize = (size / (1D * KIBIBYTE));
                 return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
             }),
-            new FormattingRule(1 * Megabyte, (size, @base, format) =>
+            new FormattingRule(1 * MEGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Kebibyte));
+                var formattedSize = (size / (1D * KIBIBYTE));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
             }),
-            new FormattingRule(10 * Megabyte, (size, @base, format) =>
+            new FormattingRule(10 * MEGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Mebibyte));
+                var formattedSize = (size / (1D * MEBIBYTE));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Mebibyte", format)}";
             }),
-            new FormattingRule(100 * Megabyte, (size, @base, format) =>
+            new FormattingRule(100 * MEGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Mebibyte));
+                var formattedSize = (size / (1D * MEBIBYTE));
                 return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Mebibyte", format)}";
             }),
-            new FormattingRule(1 * Gigabyte, (size, @base, format) =>
+            new FormattingRule(1 * GIGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Mebibyte));
+                var formattedSize = (size / (1D * MEBIBYTE));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Mebibyte", format)}";
             }),
-            new FormattingRule(10 * Gigabyte, (size, @base, format) =>
+            new FormattingRule(10 * GIGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Gibibyte));
+                var formattedSize = (size / (1D * GIBIBYTE));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Gibibyte", format)}";
             }),
-            new FormattingRule(100 * Gigabyte, (size, @base, format) =>
+            new FormattingRule(100 * GIGABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Gibibyte));
+                var formattedSize = (size / (1D * GIBIBYTE));
                 return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Gibibyte", format)}";
             }),
-            new FormattingRule(1 * Terabyte, (size, @base, format) =>
+            new FormattingRule(1 * TERABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Gibibyte));
+                var formattedSize = (size / (1D * GIBIBYTE));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Gibibyte", format)}";
             }),
-            new FormattingRule(10 * Terabyte, (size, @base, format) =>
+            new FormattingRule(10 * TERABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Tebibyte));
+                var formattedSize = (size / (1D * TEBIBYTE));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
             }),
-            new FormattingRule(100 * Terabyte, (size, @base, format) =>
+            new FormattingRule(100 * TERABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Tebibyte));
+                var formattedSize = (size / (1D * TEBIBYTE));
                 return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
             }),
-            new FormattingRule(1 * Petabyte, (size, @base, format) =>
+            new FormattingRule(1 * PETABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Tebibyte));
+                var formattedSize = (size / (1D * TEBIBYTE));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Tebibyte", format)}";
             }),
-            new FormattingRule(10 * Petabyte, (size, @base, format) =>
+            new FormattingRule(10 * PETABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Pebibyte));
+                var formattedSize = (size / (1D * PEBIBYTE));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Pebibyte", format)}";
             }),
-            new FormattingRule(100 * Petabyte, (size, @base, format) =>
+            new FormattingRule(100 * PETABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Pebibyte));
+                var formattedSize = (size / (1D * PEBIBYTE));
                 return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Pebibyte", format)}";
             }),
-            new FormattingRule(1 * Exabyte, (size, @base, format) =>
+            new FormattingRule(1 * EXABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Pebibyte));
+                var formattedSize = (size / (1D * PEBIBYTE));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Pebibyte", format)}";
             }),
-            new FormattingRule(10 * (ulong)Exabyte, (size, @base, format) =>
+            new FormattingRule(10 * (ulong)EXABYTE, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Exbibyte));
+                var formattedSize = (size / (1D * EXBIBYTE));
                 return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Exbibyte", format)}";
             }),
             new FormattingRule(ulong.MaxValue, (size, @base, format) =>
             {
-                var formattedSize = (size / (1M * Exbibyte));
+                var formattedSize = (size / (1D * EXBIBYTE));
                 return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Exbibyte", format)}";
             }),
         };
 
-        public long Bytes { get; }
+        public long TotalBytes { get; }
 
         public PrettySize(long bytes)
         {
-            Bytes = bytes;
+            TotalBytes = bytes;
         }
 
         public PrettySize(ulong bytes)
         {
-            Bytes = (long)bytes;
+            TotalBytes = (long)bytes;
         }
 
         public override string ToString()
         {
-            return Format(Bytes, CalculationBase.Base2, PrintFormat.Smart);
+            return Format(TotalBytes, CalculationBase.Base2, PrintFormat.Smart);
         }
 
         public string ToString(string format, IFormatProvider formatProvider)
@@ -321,9 +342,9 @@ namespace NeoSmart.PrettySize
             }
         }
 
-        private static string FormatUnitBase2(decimal formattedSize, string unit, PrintFormat format)
+        private static string FormatUnitBase2(double formattedSize, string unit, PrintFormat format)
         {
-            if (formattedSize != 1.0M)
+            if (formattedSize != 1.0D)
             {
                 unit += "s";
             }
@@ -348,9 +369,9 @@ namespace NeoSmart.PrettySize
             throw new ArgumentException();
         }
 
-        private static string FormatUnitBase10(decimal formattedSize, string unit, PrintFormat format)
+        private static string FormatUnitBase10(double formattedSize, string unit, PrintFormat format)
         {
-            if (formattedSize != 1.0M)
+            if (formattedSize != 1.0D)
             {
                 unit += "s";
             }
@@ -377,32 +398,29 @@ namespace NeoSmart.PrettySize
 
         public static PrettySize operator +(PrettySize lhs, PrettySize rhs)
         {
-            return new PrettySize(lhs.Bytes + rhs.Bytes);
+            return new PrettySize(lhs.TotalBytes + rhs.TotalBytes);
         }
 
         public static PrettySize operator -(PrettySize lhs, PrettySize rhs)
         {
-            return new PrettySize(lhs.Bytes - rhs.Bytes);
+            return new PrettySize(lhs.TotalBytes - rhs.TotalBytes);
         }
 
         public static PrettySize operator *(PrettySize lhs, long rhs)
         {
-            return new PrettySize(lhs.Bytes * rhs);
+            return new PrettySize(lhs.TotalBytes * rhs);
         }
 
         public static PrettySize operator *(long lhs, PrettySize rhs)
         {
-            return new PrettySize(rhs.Bytes * lhs);
+            return new PrettySize(rhs.TotalBytes * lhs);
         }
 
         public static PrettySize operator /(PrettySize lhs, long rhs)
         {
-            return new PrettySize((long) (((double)lhs.Bytes) / rhs));
+            return new PrettySize((long) (((double)lhs.TotalBytes) / rhs));
         }
 
-        // Backwards compatibility stuff below
 
-        [Obsolete("Use the correctly-spelled Kibibyte constant instead!")]
-        public const long Kebibyte = Kibibyte;
     }
 }
