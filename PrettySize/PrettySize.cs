@@ -4,8 +4,9 @@ namespace NeoSmart.PrettySize
 {
     public struct PrettySize : IFormattable
     {
-        public const long Kilobyte = 1000;        
-        public const long Megabyte = 1000 * Kilobyte;        
+        public const long Byte = 1;
+        public const long Kilobyte = 1000 * Byte;
+        public const long Megabyte = 1000 * Kilobyte;
         public const long Gigabyte = 1000 * Megabyte;
         public const long Terabyte = 1000 * Gigabyte;
         public const long Petabyte = 1000 * Terabyte;
@@ -18,6 +19,7 @@ namespace NeoSmart.PrettySize
         public const long Pebibyte = 1L << 50;
         public const long Exbibyte = 1L << 60;
 
+        public const long B = Byte;
         public const long KB = Kilobyte;
         public const long KiB = Kebibyte;
         public const long MB = Megabyte;
