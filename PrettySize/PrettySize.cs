@@ -338,11 +338,11 @@ namespace NeoSmart.PrettySize
             }
             else if (format == PrintFormat.FullLowerCase)
             {
-                return unit.ToLower();
+                return unit.ToLowerInvariant();
             }
             else if (format == PrintFormat.AbbreviatedLowerCase)
             {
-                return Char.ToLower(unit[0]) + "ib";
+                return char.ToLowerInvariant(unit[0]) + "ib";
             }
 
             throw new ArgumentException();
@@ -365,11 +365,11 @@ namespace NeoSmart.PrettySize
             }
             else if (format == PrintFormat.FullLowerCase)
             {
-                return unit.ToLower();
+                return unit.ToLowerInvariant();
             }
             else if (format == PrintFormat.AbbreviatedLowerCase)
             {
-                return Char.ToLower(unit[0]) + "b";
+                return char.ToLowerInvariant(unit[0]) + "b";
             }
 
             throw new ArgumentException();
