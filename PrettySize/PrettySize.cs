@@ -32,7 +32,7 @@ namespace NeoSmart.PrettySize
 
         delegate string FormatDelegate(ulong size, CalculationBase @base, PrintFormat format);
 
-        readonly struct FormattingRule : IComparable
+        readonly struct FormattingRule : IComparable, IComparable<FormattingRule>
         {
             public ulong LessThan { get; }
             public FormatDelegate FormatDelegate { get; }
@@ -45,6 +45,11 @@ namespace NeoSmart.PrettySize
                 return LessThan.CompareTo(((FormattingRule)other).LessThan);
             }
 
+            public int CompareTo(FormattingRule other)
+            {
+                return LessThan.CompareTo(other.LessThan);
+            }
+
             // .NET 2.0 doesn't have init-only setters so we need this constructor!
             public FormattingRule(ulong LessThan, FormatDelegate FormatDelegate)
             {
@@ -52,6 +57,13 @@ namespace NeoSmart.PrettySize
                 this.FormatDelegate = FormatDelegate;
             }
         }
+
+        readonly struct FormattingRuleComparer : IComparer<FormattingRule>
+        {
+            public int Compare(FormattingRule x, FormattingRule y)
+            {
+                return x.LessThan.CompareTo(y.LessThan);
+            }
         }
 
         static private string PrintBytes(ulong size, PrintFormat format)
@@ -288,7 +300,7 @@ namespace NeoSmart.PrettySize
         {
             if (@base == CalculationBase.Base2)
             {
-                var searchIndex = Array.BinarySearch(Base2Map, size);
+                var searchIndex = Array.BinarySearch(Base2Map, new FormattingRule(size, null), new FormattingRuleComparer());
                 if (searchIndex < 0)
                 {
                     searchIndex = ~searchIndex;
@@ -298,7 +310,7 @@ namespace NeoSmart.PrettySize
             }
             else
             {
-                var searchIndex = Array.BinarySearch(Base10Map, size);
+                var searchIndex = Array.BinarySearch(Base10Map, new FormattingRule(size, null), new FormattingRuleComparer());
                 if (searchIndex < 0)
                 {
                     searchIndex = ~searchIndex;
