@@ -34,10 +34,10 @@ namespace UserTests
                 {
                     Console.WriteLine("Unable to parse user input!");
                     continue;
-                }   
+                }
 
-                Console.WriteLine(PrettySize.Format(value, CalculationBase.Base2));
-                Console.WriteLine(PrettySize.Format(value, CalculationBase.Base10));
+                Console.WriteLine(PrettySize.Format(value, UnitBase.Base2));
+                Console.WriteLine(PrettySize.Format(value, UnitBase.Base10));
             }
         }
     }

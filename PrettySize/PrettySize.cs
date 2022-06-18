@@ -51,7 +51,7 @@ namespace NeoSmart.PrettySize
         public static PrettySize PiB(long value) => Pebibytes(value);
         public static PrettySize EiB(long value) => Exbibytes(value);
 
-        delegate string FormatDelegate(ulong size, CalculationBase @base, PrintFormat format);
+        delegate string FormatDelegate(ulong size, UnitBase @base, UnitStyle format);
 
         readonly struct FormattingRule : IComparable, IComparable<FormattingRule>
         {
@@ -87,15 +87,15 @@ namespace NeoSmart.PrettySize
             }
         }
 
-        static private string PrintBytes(ulong size, PrintFormat format)
+        static private string PrintBytes(ulong size, UnitStyle format)
         {
             switch (format)
             {
-                case PrintFormat.Abbreviated: return $"{size} B";
-                case PrintFormat.AbbreviatedLowerCase: return $"{size} b";
-                case PrintFormat.Full: return size == 1 ? $"{size} Byte" : $"{size} Bytes";
-                case PrintFormat.Smart:
-                case PrintFormat.FullLowerCase:
+                case UnitStyle.Abbreviated: return $"{size} B";
+                case UnitStyle.AbbreviatedLower: return $"{size} b";
+                case UnitStyle.Full: return size == 1 ? $"{size} Byte" : $"{size} Bytes";
+                case UnitStyle.Smart:
+                case UnitStyle.FullLower:
                     return size == 1 ? $"{size} byte" : $"{size} bytes";
             }
 
@@ -304,7 +304,7 @@ namespace NeoSmart.PrettySize
 
         public override string ToString()
         {
-            return Format(TotalBytes, CalculationBase.Base2, PrintFormat.Smart);
+            return Format(TotalBytes, UnitBase.Base2, UnitStyle.Smart);
         }
 
         public string ToString(string format, IFormatProvider formatProvider)
@@ -313,14 +313,19 @@ namespace NeoSmart.PrettySize
             return ToString();
         }
 
-        public static string Format(long size, CalculationBase @base = CalculationBase.Base2, PrintFormat format = PrintFormat.Smart)
+        public string Format(UnitBase @base = UnitBase.Base2, UnitStyle format = UnitStyle.Smart)
+        {
+            return Format(TotalBytes, @base, format);
+        }
+
+        public static string Format(long size, UnitBase @base = UnitBase.Base2, UnitStyle format = UnitStyle.Smart)
         {
             return Format((ulong)size, @base, format);
         }
 
-        public static string Format(ulong size, CalculationBase @base = CalculationBase.Base2, PrintFormat format = PrintFormat.Smart)
+        public static string Format(ulong size, UnitBase @base = UnitBase.Base2, UnitStyle format = UnitStyle.Smart)
         {
-            if (@base == CalculationBase.Base2)
+            if (@base == UnitBase.Base2)
             {
                 var searchIndex = Array.BinarySearch(Base2Map, new FormattingRule(size, null), new FormattingRuleComparer());
                 if (searchIndex < 0)
@@ -342,26 +347,26 @@ namespace NeoSmart.PrettySize
             }
         }
 
-        private static string FormatUnitBase2(double formattedSize, string unit, PrintFormat format)
+        private static string FormatUnitBase2(double formattedSize, string unit, UnitStyle format)
         {
             if (formattedSize != 1.0D)
             {
                 unit += "s";
             }
 
-            if (format == PrintFormat.Smart || format == PrintFormat.Abbreviated)
+            if (format == UnitStyle.Smart || format == UnitStyle.Abbreviated)
             {
                 return unit[0] + "iB";
             }
-            else if (format == PrintFormat.Full)
+            else if (format == UnitStyle.Full)
             {
                 return unit;
             }
-            else if (format == PrintFormat.FullLowerCase)
+            else if (format == UnitStyle.FullLower)
             {
                 return unit.ToLowerInvariant();
             }
-            else if (format == PrintFormat.AbbreviatedLowerCase)
+            else if (format == UnitStyle.AbbreviatedLower)
             {
                 return char.ToLowerInvariant(unit[0]) + "ib";
             }
@@ -369,26 +374,26 @@ namespace NeoSmart.PrettySize
             throw new ArgumentException();
         }
 
-        private static string FormatUnitBase10(double formattedSize, string unit, PrintFormat format)
+        private static string FormatUnitBase10(double formattedSize, string unit, UnitStyle format)
         {
             if (formattedSize != 1.0D)
             {
                 unit += "s";
             }
 
-            if (format == PrintFormat.Smart || format == PrintFormat.Abbreviated)
+            if (format == UnitStyle.Smart || format == UnitStyle.Abbreviated)
             {
                 return unit[0] + "B";
             }
-            else if (format == PrintFormat.Full)
+            else if (format == UnitStyle.Full)
             {
                 return unit;
             }
-            else if (format == PrintFormat.FullLowerCase)
+            else if (format == UnitStyle.FullLower)
             {
                 return unit.ToLowerInvariant();
             }
-            else if (format == PrintFormat.AbbreviatedLowerCase)
+            else if (format == UnitStyle.AbbreviatedLower)
             {
                 return char.ToLowerInvariant(unit[0]) + "b";
             }

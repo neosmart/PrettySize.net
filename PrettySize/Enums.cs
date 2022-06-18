@@ -1,17 +1,17 @@
 ﻿namespace NeoSmart.PrettySize
 {
-    public enum CalculationBase
+    public enum UnitBase
     {
         Base2,
         Base10
     }
 
-    public enum PrintFormat
+    public enum UnitStyle
     {
         Smart,
         Abbreviated,
-        AbbreviatedLowerCase,
+        AbbreviatedLower,
         Full,
-        FullLowerCase
+        FullLower,
     }
 }

@@ -9,20 +9,20 @@ namespace NeoSmart.PrettySize.Tests
         public void SingularVsPlural()
         {
             Assert.AreEqual("0 bytes", PrettySize.Format(0));
-            Assert.AreEqual("0 bytes", PrettySize.Format(0, CalculationBase.Base10));
+            Assert.AreEqual("0 bytes", PrettySize.Format(0, UnitBase.Base10));
             Assert.AreEqual("1 byte", PrettySize.Format(1));
-            Assert.AreEqual("1 byte", PrettySize.Format(1, CalculationBase.Base10));
+            Assert.AreEqual("1 byte", PrettySize.Format(1, UnitBase.Base10));
             Assert.AreEqual("10 bytes", PrettySize.Format(10));
-            Assert.AreEqual("10 bytes", PrettySize.Format(10, CalculationBase.Base10));
+            Assert.AreEqual("10 bytes", PrettySize.Format(10, UnitBase.Base10));
             Assert.AreEqual("1.00 KiB", PrettySize.Format(1024));
-            Assert.AreEqual("1.00 KB", PrettySize.Format(1000, CalculationBase.Base10));
+            Assert.AreEqual("1.00 KB", PrettySize.Format(1000, UnitBase.Base10));
         }
 
         [TestMethod]
         public void Rounding()
         {
-            Assert.AreEqual("1.50 KB", PrettySize.Format(1500, CalculationBase.Base10));
-            Assert.AreEqual("2.00 KB", PrettySize.Format(1999, CalculationBase.Base10));
+            Assert.AreEqual("1.50 KB", PrettySize.Format(1500, UnitBase.Base10));
+            Assert.AreEqual("2.00 KB", PrettySize.Format(1999, UnitBase.Base10));
         }
 
         [TestMethod]
