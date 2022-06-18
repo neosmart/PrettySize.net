@@ -206,17 +206,17 @@ namespace NeoSmart.PrettySize
             new FormattingRule(10 * KILOBYTE, (size, @base, format) =>
             {
                 var formattedSize = (size / (1D * KIBIBYTE));
-                return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
+                return $"{formattedSize:N2} {FormatUnitBase2(formattedSize, "Kibibyte", format)}";
             }),
             new FormattingRule(100 * KILOBYTE, (size, @base, format) =>
             {
                 var formattedSize = (size / (1D * KIBIBYTE));
-                return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
+                return $"{formattedSize:N1} {FormatUnitBase2(formattedSize, "Kibibyte", format)}";
             }),
             new FormattingRule(1 * MEGABYTE, (size, @base, format) =>
             {
                 var formattedSize = (size / (1D * KIBIBYTE));
-                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Kebibyte", format)}";
+                return $"{formattedSize:N0} {FormatUnitBase2(formattedSize, "Kibibyte", format)}";
             }),
             new FormattingRule(10 * MEGABYTE, (size, @base, format) =>
             {
