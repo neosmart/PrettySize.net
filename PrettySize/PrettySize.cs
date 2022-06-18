@@ -13,7 +13,7 @@ namespace NeoSmart.PrettySize
         public const long Petabyte = 1000 * Terabyte;
         public const long Exabyte  = 1000 * Petabyte;
 
-        public const long Kebibyte = 1L << 10;
+        public const long Kibibyte = 1L << 10;
         public const long Mebibyte = 1L << 20;
         public const long Gibibyte = 1L << 30;
         public const long Tebibyte = 1L << 40;
@@ -22,7 +22,7 @@ namespace NeoSmart.PrettySize
 
         public const long B = Byte;
         public const long KB = Kilobyte;
-        public const long KiB = Kebibyte;
+        public const long KiB = Kibibyte;
         public const long MB = Megabyte;
         public const long MiB = Mebibyte;
         public const long GB = Gigabyte;
@@ -374,5 +374,10 @@ namespace NeoSmart.PrettySize
 
             throw new ArgumentException();
         }
+
+        // Backwards compatibility stuff below
+
+        [Obsolete("Use the correctly-spelled Kibibyte constant instead!")]
+        public const long Kebibyte = Kibibyte;
     }
 }
