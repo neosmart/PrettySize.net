@@ -288,7 +288,8 @@ namespace NeoSmart.PrettySize
 
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
+            return ToString();
         }
 
         public static string Format(long size, CalculationBase @base = CalculationBase.Base2, PrintFormat format = PrintFormat.Smart)
