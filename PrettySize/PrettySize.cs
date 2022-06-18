@@ -375,6 +375,31 @@ namespace NeoSmart.PrettySize
             throw new ArgumentException();
         }
 
+        public static PrettySize operator +(PrettySize lhs, PrettySize rhs)
+        {
+            return new PrettySize(lhs.Bytes + rhs.Bytes);
+        }
+
+        public static PrettySize operator -(PrettySize lhs, PrettySize rhs)
+        {
+            return new PrettySize(lhs.Bytes - rhs.Bytes);
+        }
+
+        public static PrettySize operator *(PrettySize lhs, long rhs)
+        {
+            return new PrettySize(lhs.Bytes * rhs);
+        }
+
+        public static PrettySize operator *(long lhs, PrettySize rhs)
+        {
+            return new PrettySize(rhs.Bytes * lhs);
+        }
+
+        public static PrettySize operator /(PrettySize lhs, long rhs)
+        {
+            return new PrettySize((long) (((double)lhs.Bytes) / rhs));
+        }
+
         // Backwards compatibility stuff below
 
         [Obsolete("Use the correctly-spelled Kibibyte constant instead!")]
