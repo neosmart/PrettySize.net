@@ -7,16 +7,16 @@
     <RootNamespace>NeoSmart.PrettySize</RootNamespace>
     <Authors>Mahmoud Al-Qudsi, neosmart</Authors>
     <Company>NeoSmart Technologies</Company>
-    <Description>Format or print file sizes, with support for both base 10 (e.g. kilobyte, megabyte, KB, MB) and base 2 (e.g. kibibyte, mebibyte, KiB, MiB) sizes.</Description>
+    <Description>Calculate, format, or print file sizes; with support for both base 10 (e.g. kilobyte, megabyte, KB, MB) and base 2 (e.g. kibibyte, mebibyte, KiB, MiB) sizes.</Description>
     <Copyright>Copyright NeoSmart Technologies 2017-2022</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/neosmart/PrettySize.net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/neosmart/PrettySize.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>file size, size, formatting, english, bytes</PackageTags>
+    <PackageTags>file size, size, formatting, bytes, english</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>3.0.0</Version>
+    <Version>3.1.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <LangVersion>9.0</LangVersion>
   </PropertyGroup>
