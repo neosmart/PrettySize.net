@@ -21,7 +21,8 @@ using NeoSmart.PrettySize;
 
 public void Main() {
     // Initializing directly via the default constructor:
-    var size = new PrettySize(200); // 200 bytes
+    var size = new PrettySize(200);
+    Console.WriteLine($"Size: {size}"); // Prints "Size: 200 bytes"
 
     // Initializing via a unit-based helper function:
     var size1 = PrettySize.KiB(28);
