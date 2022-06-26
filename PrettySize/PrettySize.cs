@@ -104,7 +104,6 @@ namespace NeoSmart.PrettySize
 
         static private readonly FormattingRule[] Base10Map = new FormattingRule[]
         {
-            new FormattingRule(0, null), // this should never be reached
             new FormattingRule(1 * KILOBYTE, (size, @base, format) =>
             {
                 return PrintBytes(size, format);
@@ -198,7 +197,6 @@ namespace NeoSmart.PrettySize
 
         static private readonly FormattingRule[] Base2Map = new FormattingRule[]
         {
-            new FormattingRule (0, null), // this should never be reached
             new FormattingRule(1 * KILOBYTE, (size, @base, format) =>
             {
                 return PrintBytes(size, format);
@@ -320,7 +318,17 @@ namespace NeoSmart.PrettySize
 
         public static string Format(long size, UnitBase @base = UnitBase.Base2, UnitStyle format = UnitStyle.Smart)
         {
-            return Format((ulong)size, @base, format);
+            bool neg = size < 0;
+            ulong fmt_size = size switch
+            {
+                // Math.Abs(long.MinValue) is out of range for long so we handle it separately
+                long.MinValue => ((ulong)long.MaxValue) + 1,
+                < 0 => (ulong) Math.Abs(size),
+                _ => (ulong)size,
+            };
+
+            var formatted = Format(fmt_size, @base, format);
+            return neg ? "-" + formatted : formatted;
         }
 
         public static string Format(ulong size, UnitBase @base = UnitBase.Base2, UnitStyle format = UnitStyle.Smart)

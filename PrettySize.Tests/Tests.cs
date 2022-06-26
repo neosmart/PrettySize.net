@@ -30,7 +30,15 @@ namespace NeoSmart.PrettySize.Tests
         public void NegativeSizeFormatting()
         {
             Assert.AreEqual("0 bytes", PrettySize.KiB(-0).ToString());
-            Assert.AreEqual("-1 byte", PrettySize.KiB(-1).ToString());
+            Assert.AreEqual("-1 byte", PrettySize.Bytes(-1).ToString());
+            Assert.AreEqual("-1.00 KiB", PrettySize.KiB(-1).ToString());
+        }
+
+        [TestMethod]
+        public void NumericLimits()
+        {
+            Assert.AreEqual("8.00 EiB", PrettySize.Bytes(long.MaxValue).ToString());
+            Assert.AreEqual("-8.00 EiB", PrettySize.Bytes(long.MinValue).ToString());
         }
 
         [TestMethod]
