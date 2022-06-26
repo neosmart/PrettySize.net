@@ -19,6 +19,21 @@ namespace NeoSmart.PrettySize.Tests
         }
 
         [TestMethod]
+        public void NegativeSizes()
+        {
+            Assert.AreEqual(-1024, PrettySize.KiB(-1).TotalBytes);
+            Assert.AreEqual(0, PrettySize.KiB(-0).TotalBytes);
+            Assert.AreEqual(PrettySize.KiB(-1), PrettySize.KiB(1) - PrettySize.Bytes(2048));
+        }
+
+        [TestMethod]
+        public void NegativeSizeFormatting()
+        {
+            Assert.AreEqual("0 bytes", PrettySize.KiB(-0).ToString());
+            Assert.AreEqual("-1 byte", PrettySize.KiB(-1).ToString());
+        }
+
+        [TestMethod]
         public void Rounding()
         {
             Assert.AreEqual("1.50 KB", PrettySize.Format(1500, UnitBase.Base10));
