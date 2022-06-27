@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace NeoSmart.PrettySize
 {
@@ -487,5 +488,14 @@ namespace NeoSmart.PrettySize
         {
             return lhs.CompareTo(rhs) >= 0;
         }
+
+        #region Obsolete
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete($"Use {nameof(KIBIBYTE)} instead")]
+        public const long KEBIBYTE = KIBIBYTE;
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete($"Use {nameof(Kibibytes)} instead")]
+        public static PrettySize Kebibytes(long value) => Kibibytes(value);
+        #endregion
     }
 }
